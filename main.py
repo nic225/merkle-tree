@@ -1,5 +1,19 @@
 from generate import generate
 
+def generate_random_address():
+    return ''.join(random.choices('0123456789abcdef', k=40))
+
+def generate_random_balance():
+    return random.randint(0, 9_999_999)
+
+def generate():
+    with open("input.txt", 'w') as f:
+        for _ in range(100):
+            address = generate_random_address()
+            balance = generate_random_balance()
+            f.write(f"{address} {balance}\n")
+
+
 def prompt():
     # Prompt the user for a file path
     file_path = input("Please enter the path to your text file: ")
