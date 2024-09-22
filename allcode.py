@@ -1,24 +1,36 @@
-from generate import generate
+import random
+import string
 
-def generate_random_address():
+
+def random_address():
     return ''.join(random.choices('0123456789abcdef', k=40))
 
-def generate_random_balance():
+def random_balance():
     return random.randint(0, 9_999_999)
 
-def generate():
-    with open("input.txt", 'w') as f:
-        for _ in range(100):
-            address = generate_random_address()
-            balance = generate_random_balance()
-            f.write(f"{address} {balance}\n")
-
+def generate(filename, num_entries):
+    entries = [(random_address(), random_balance()) for _ in range(num_entries)]
+    entries.sort(key=lambda x: x[0])
+    with open(filename, 'w') as f:
+        for address, balance in entries:
+            f.write(f"{address} {balance}\0")
 
 def prompt():
     # Prompt the user for a file path
-    file_path = input("Please enter the path to your text file: ")
-    generate()
 
+    choice = input("Enter 'yes' to enter input file path, anything else will use our input.txt file: ")
+    if(choice == 'yes'):
+        file_path = input("Please enter the path to your text file: ")
+    else:
+        file_path = "./input.txt"
+
+    generate(file_path, 100)
+
+    return file_path
+
+
+
+def createMerkleTree(file_path):
     try:
         # Open and read the text file
         with open(file_path, 'r') as file:
@@ -30,5 +42,8 @@ def prompt():
     except Exception as e:
         print(f"An error occurred: {e}")
 
+
+
 if __name__ == "__main__":
-    prompt()
+    file_path = prompt()
+    createMerkleTree(file_path)
