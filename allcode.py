@@ -13,7 +13,7 @@ def generate(filename, num_entries):
     entries.sort(key=lambda x: x[0])
     with open(filename, 'w') as f:
         for address, balance in entries:
-            f.write(f"{address} {balance}\0")
+            f.write(f"{address} {balance}\0\n")
 
 def prompt():
     choice = input("Enter 'yes' to enter input file path, anything else will use our input.txt file: ")
