@@ -1,4 +1,5 @@
 import random
+import math
 import string
 import hashlib
 
@@ -46,18 +47,21 @@ def get_accounts(filename):
     return accounts
 
 class MerkleNode:
-    def __init__(self, left_node=None, right_node=None, account=None, balance=None):
+    def __init__(self, left_node=None, right_node=None, account=None, balance=None, hash=None):
         self.left = left_node
         self.right = right_node
-        if self.right and self.left:
-            self.hash = self.calculate_parent_hash()
-        elif self.left:
-            self.hash = self.left.hash
+        self.hash = hash
 
-        if account is not None and balance is not None:
-            self.account = account
-            self.balance = balance
-            self.hash = self.calculate_hash(account, balance)
+        if not self.hash: 
+            if self.right and self.left:
+                self.hash = self.calculate_parent_hash()
+            elif self.left:
+                self.hash = self.left.hash
+
+            if account is not None and balance is not None:
+                self.account = account
+                self.balance = balance
+                self.hash = self.calculate_hash(account, balance)
 
 
     def calculate_hash(self, account, balance):
@@ -67,6 +71,13 @@ class MerkleNode:
     def calculate_parent_hash(self):
         combined_hash = self.left.hash + self.right.hash
         return hashlib.sha256(combined_hash.encode()).hexdigest()
+
+def pad_lead_nodes(nodes):
+    n = len(nodes)
+    next_power_of_2 = 2 ** math.ceil(math.log2(n))
+    while len(nodes) < next_power_of_2:
+        nodes.append(MerkleNode(hash="")) 
+    return nodes   
 
 def get_root(nodes):
     parents = []
@@ -85,9 +96,8 @@ def get_root(nodes):
 def createMerkleTree(file_path):
     accounts = get_accounts(file_path)
     leaf_nodes = [MerkleNode(account=account, balance=balance) for account, balance in accounts]
+    pad_lead_nodes(leaf_nodes)
     root = get_root(leaf_nodes)
     return root
 
 if __name__ == "__main__":
-    file_path = prompt()
-    print("Merkle Root: " + createMerkleTree(file_path))
