@@ -101,3 +101,5 @@ def createMerkleTree(file_path):
     return root
 
 if __name__ == "__main__":
+    file_path = prompt()
+    print("Merkle Root: " + createMerkleTree(file_path))
